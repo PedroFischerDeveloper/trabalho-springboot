@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.api.internal.ErrorMessage;
+import com.api.model.Post;
 import com.api.model.Topic;
 import com.api.model.User;
 import com.api.service.TopicService;
@@ -73,16 +74,49 @@ public class TopicsController {
 	}
 	
 	
-	@PutMapping
-	public String update(@PathVariable(value = "id") long id)
+	@PutMapping("{id}")
+	public ResponseEntity update(@RequestBody Topic obj, @RequestHeader("Authorization") String token,
+			@PathVariable(value = "id") long id)
 	{
-		return "update a topic by " + id;
+		try {
+			User u = userService.getByToken(token);
+			Topic t = service.getById(id);
+			if(t == null) {
+				return new ResponseEntity(new ErrorMessage("Tópico não encontrado."),HttpStatus.NOT_FOUND);
+			}
+			else if(u == null || t.user.id != u.id){
+				return new ResponseEntity(new ErrorMessage("Token inválido."),HttpStatus.UNAUTHORIZED);
+			}
+			else {
+				t = service.upate(t, obj, id);
+				return ResponseEntity.ok(t);
+			}
+		}
+		catch(Exception ex) {
+			return new ResponseEntity(new ErrorMessage(ex),HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 	
 	
-	@DeleteMapping
-	public String delete()
+	@DeleteMapping("{id}")
+	public ResponseEntity delete(@RequestHeader("Authorization") String token, @PathVariable(value = "id") long id)
 	{
-		return "delete a topic by id ";
+		try {
+			User u = userService.getByToken(token);
+			Topic t = service.getById(id);
+			if(t == null) {
+				return new ResponseEntity(new ErrorMessage("Tópico não encontrado."),HttpStatus.NOT_FOUND);
+			}
+			else if(u == null || t.user.id != u.id){
+				return new ResponseEntity(new ErrorMessage("Token inválido."),HttpStatus.UNAUTHORIZED);
+			}
+			else {
+				service.delete(t);
+				return ResponseEntity.ok(t);
+			}
+		}
+		catch(Exception ex) {
+			return new ResponseEntity(new ErrorMessage(ex),HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 }

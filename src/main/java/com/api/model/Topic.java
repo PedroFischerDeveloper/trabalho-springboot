@@ -41,9 +41,19 @@ public class Topic implements Serializable{
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "hh:mm:ss dd/MM/yyyy", timezone = "America/Sao_Paulo")
+	@JsonProperty(access = Access.READ_ONLY)
 	@Getter @Setter public Date creationDate;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "hh:mm:ss dd/MM/yyyy", timezone = "America/Sao_Paulo")
+	@JsonProperty(access = Access.READ_ONLY)
+	@Getter @Setter public Date updateDate;
+
+	@JsonProperty(access = Access.READ_ONLY)
+	@Getter @Setter public TopicStatus status;
 	
 	@ManyToOne
+	@JsonProperty(access = Access.READ_ONLY)
 	@Getter @Setter public User user;
 	
 	@OneToMany(mappedBy = "topic", fetch = FetchType.LAZY)

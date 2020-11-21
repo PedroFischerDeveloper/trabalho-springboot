@@ -20,6 +20,4 @@ public interface TopicRepository extends CrudRepository<Topic,Integer> {
 	
 	@Query("from Topic where id = :tid")
 	public Topic findById(@Param("tid") Long tid);
-	
-	public String deleteById(Long id);
 }

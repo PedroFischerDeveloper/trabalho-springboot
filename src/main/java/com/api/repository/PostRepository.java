@@ -1,5 +1,6 @@
 package com.api.repository;
 
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -15,6 +16,4 @@ public interface PostRepository extends CrudRepository<Post,Integer> {
 	
 	@Query("from Post where id = :pid")
 	public Post findById(@Param("pid") Long pid);
-	
-	public String deleteById(Long id);
 }

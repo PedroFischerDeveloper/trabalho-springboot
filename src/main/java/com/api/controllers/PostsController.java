@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.api.internal.ErrorMessage;
 import com.api.model.Post;
 import com.api.model.Topic;
+import com.api.model.TopicStatus;
 import com.api.model.User;
 import com.api.service.PostService;
 import com.api.service.TopicService;
@@ -69,7 +70,6 @@ public class PostsController {
 			}
 			else if(t == null){
 				return new ResponseEntity(new ErrorMessage("Tópico não encontrado."),HttpStatus.NOT_FOUND);
-				
 			}
 			else {
 				obj.user = u;
@@ -85,16 +85,49 @@ public class PostsController {
 	}
 	
 	
-	@PutMapping
-	public String update(@PathVariable(value = "id") long id)
+	@PutMapping("{id}")
+	public ResponseEntity<Post> update(@RequestBody Post obj, @RequestHeader("Authorization") String token,
+			@PathVariable(value = "id") long id)
 	{
-		return "update a post by " + id;
+		try {
+			User u = userService.getByToken(token);
+			Post p = service.getById(id);
+			if(p == null) {
+				return new ResponseEntity(new ErrorMessage("Post não encontrado."),HttpStatus.NOT_FOUND);
+			}
+			else if(u == null || p.user.id != u.id){
+				return new ResponseEntity(new ErrorMessage("Token inválido."),HttpStatus.UNAUTHORIZED);
+			}
+			else {
+				p = service.upate(p, obj, id);
+				return ResponseEntity.ok(p);
+			}
+		}
+		catch(Exception ex) {
+			return new ResponseEntity(new ErrorMessage(ex),HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 	
 	
-	@DeleteMapping
-	public String delete()
+	@DeleteMapping("{id}")
+	public ResponseEntity delete(@RequestHeader("Authorization") String token, @PathVariable(value = "id") long id)
 	{
-		return "delete a post by id ";
+		try {
+			User u = userService.getByToken(token);
+			Post p = service.getById(id);
+			if(p == null) {
+				return new ResponseEntity(new ErrorMessage("Post não encontrado."),HttpStatus.NOT_FOUND);
+			}
+			else if(u == null || p.user.id != u.id){
+				return new ResponseEntity(new ErrorMessage("Token inválido."),HttpStatus.UNAUTHORIZED);
+			}
+			else {
+				service.delete(p);
+				return ResponseEntity.ok(p);
+			}
+		}
+		catch(Exception ex) {
+			return new ResponseEntity(new ErrorMessage(ex),HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 }

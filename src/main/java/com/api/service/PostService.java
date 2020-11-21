@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.api.model.Post;
+import com.api.model.TopicStatus;
 import com.api.repository.PostRepository;
 
 @Service
@@ -28,7 +29,21 @@ public class PostService {
 	}
 	
 	public Post insert(Post post) throws Exception {
+		if(post.topic.status == TopicStatus.CLOSED)
+			throw new Exception("Tópico indisponível");
 		post.creationDate = new Date();
 		return repo.save(post);
+	}
+	
+	public Post upate(Post oldData, Post newData, long id) throws Exception {
+		if(oldData.topic.status == TopicStatus.CLOSED)
+			throw new Exception("Tópico indisponível");
+		oldData.content = newData.content;
+		oldData.updateDate = new Date();
+		return repo.save(oldData);
+	}
+	
+	public void delete(Post post) throws Exception {
+		repo.delete(post);
 	}
 }

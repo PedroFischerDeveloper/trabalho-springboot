@@ -13,6 +13,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
@@ -34,11 +35,18 @@ public class Post implements Serializable{
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "hh:mm:ss dd/MM/yyyy", timezone = "America/Sao_Paulo")
+	@JsonProperty(access = Access.READ_ONLY)
 	@Getter @Setter public Date creationDate;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "hh:mm:ss dd/MM/yyyy", timezone = "America/Sao_Paulo")
+	@JsonProperty(access = Access.READ_ONLY)
+	@Getter @Setter public Date updateDate;
 	
 	@ManyToOne
 	@Getter @Setter public User user;
 	
 	@ManyToOne
+	@JsonIgnore
 	@Getter @Setter public Topic topic;
 }

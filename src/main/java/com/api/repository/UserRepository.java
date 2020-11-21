@@ -23,6 +23,4 @@ public interface UserRepository extends CrudRepository<User,Integer> {
 	@Modifying
 	@Query("update User set token= :token where id = :userid")
 	public void addToken(@Param("userid") Long userid, @Param("token") String token);
-	
-	public String deleteById(Long id);
 }
