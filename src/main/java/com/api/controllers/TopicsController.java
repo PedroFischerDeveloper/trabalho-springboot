@@ -34,6 +34,7 @@ public class TopicsController {
 	@Autowired
 	private UserService userService;
 	
+	
 	@GetMapping("")
 	public ResponseEntity<List<Topic>> index()
 	{

@@ -20,7 +20,7 @@ public class TopicService {
 	private TopicRepository repo;
 	
 	public List<Topic> getTopics() {
-		List<Topic> topics = StreamSupport.stream(repo.findAll().spliterator(), false)
+		List<Topic> topics = StreamSupport.stream(repo.findAllOrderedByBump().spliterator(), false)
 			    .collect(Collectors.toList());
 		return topics;
 	}

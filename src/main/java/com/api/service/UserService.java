@@ -79,5 +79,4 @@ public class UserService {
 		java.util.regex.Matcher m = p.matcher(email);
 		return m.matches();
 	}
-
 }
