@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -14,10 +15,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException.BadRequest;
 
+import com.api.internal.ErrorMessage;
 import com.api.model.User;
 import com.api.repository.UserRepository;
 import com.api.service.UserService;
@@ -37,10 +40,12 @@ public class UserController {
 	}
 	
 	@GetMapping("{id}")
-	public User findById(@PathVariable(value = "id") long id)
+	public ResponseEntity<User> findById(@PathVariable(value = "id") long id)
 	{
 		User user = service.getById(id);
-		return user;
+		if(user == null)
+			return new ResponseEntity(HttpStatus.NOT_FOUND);
+		return ResponseEntity.ok(user);
 	}
 	
 	
@@ -53,7 +58,42 @@ public class UserController {
 			return ResponseEntity.ok(user);
 		}
 		catch(Exception ex){
-			return new ResponseEntity(new Error(ex.getMessage()),HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity(new ErrorMessage(ex),HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	
+	@PostMapping("login")
+	public ResponseEntity<User> login(@RequestBody User obj)
+	{
+		try {
+			String token = service.login(obj);
+			HttpHeaders headers = new HttpHeaders();
+			headers.add("Authorization", token);
+			
+			return new ResponseEntity(service.getByToken(token), headers, HttpStatus.OK);
+		}
+		catch(Exception ex){
+			return new ResponseEntity(new ErrorMessage(ex),HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	
+	@PostMapping("logout")
+	public ResponseEntity<User> logout(@RequestHeader("Authorization") String token)
+	{
+		try {
+			User u = service.getByToken(token);
+			if(u!= null) {
+				service.logout(u);
+				return new ResponseEntity(HttpStatus.OK);
+			}
+			else {
+				return new ResponseEntity(new ErrorMessage("Token inválido."),HttpStatus.UNAUTHORIZED);
+			}
+		}
+		catch(Exception ex){
+			return new ResponseEntity(new ErrorMessage(ex),HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 	
