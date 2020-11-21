@@ -1,9 +1,9 @@
-package com.api.api;
+package com.api;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication
+@SpringBootApplication()
 public class ApiApplication {
 
 	public static void main(String[] args) {
