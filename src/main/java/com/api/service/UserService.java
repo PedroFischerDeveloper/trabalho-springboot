@@ -10,8 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
+import com.api.internal.UserToken;
 import com.api.model.User;
 import com.api.repository.UserRepository;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class UserService {
@@ -52,12 +56,18 @@ public class UserService {
 				Random r = new Random();
 				byte[] b = new byte[30];
 				r.nextBytes(b);
+				String seed = new String(Base64.getEncoder().encode(b));
 				
-				String token = new String(Base64.getEncoder().encode(b));
-				//repo.addToken(loggingUser.id, token);
-				loggingUser.token = token;
+				UserToken token = new UserToken(loggingUser, seed);
+				ObjectMapper mapper = new ObjectMapper();
+				mapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
+				String tokenString = new String(
+						Base64.getEncoder().encode(
+								mapper.writeValueAsString(token).getBytes()));
+				
+				loggingUser.token = tokenString;
 				repo.save(loggingUser);
-				return token;
+				return tokenString;
 			}
 		}
 		
