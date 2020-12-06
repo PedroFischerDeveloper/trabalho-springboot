@@ -40,12 +40,12 @@ public class Topic implements Serializable{
 	@Getter @Setter public String content;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "hh:mm:ss dd/MM/yyyy", timezone = "America/Sao_Paulo")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss dd/MM/yyyy", timezone = "America/Sao_Paulo")
 	@JsonProperty(access = Access.READ_ONLY)
 	@Getter @Setter public Date creationDate;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "hh:mm:ss dd/MM/yyyy", timezone = "America/Sao_Paulo")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss dd/MM/yyyy", timezone = "America/Sao_Paulo")
 	@JsonProperty(access = Access.READ_ONLY)
 	@Getter @Setter public Date updateDate;
 
