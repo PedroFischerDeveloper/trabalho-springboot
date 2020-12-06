@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException.BadRequest;
 
 import com.api.internal.ErrorMessage;
+import com.api.internal.TokenResponse;
 import com.api.model.User;
 import com.api.repository.UserRepository;
 import com.api.service.UserService;
@@ -64,14 +65,14 @@ public class UserController {
 	
 	
 	@PostMapping("login")
-	public ResponseEntity<User> login(@RequestBody User obj)
+	public ResponseEntity login(@RequestBody User obj)
 	{
 		try {
 			String token = service.login(obj);
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("Authorization", token);
 			
-			return new ResponseEntity(service.getByToken(token), headers, HttpStatus.OK);
+			return new ResponseEntity(new TokenResponse(token)/*service.getByToken(token)*/, headers, HttpStatus.OK);
 		}
 		catch(Exception ex){
 			return new ResponseEntity(new ErrorMessage(ex),HttpStatus.INTERNAL_SERVER_ERROR);
